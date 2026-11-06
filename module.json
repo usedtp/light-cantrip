@@ -2,7 +2,7 @@
   "id": "light-cantrip",
   "title": "Light Cantrip",
   "description": "Runs the 2024 Light cantrip: pick an object you carry (or an ally hands you one), it sheds light and moves with its carrier. Lit ammunition and thrown weapons carry the light to where they land.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "authors": [
     {
       "name": "Mick Kitor"

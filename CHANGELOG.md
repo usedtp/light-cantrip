@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1
+- Self-test fix only. The test's "hit" shot rolled a natural 1 and its "miss" shot a natural 20, because Foundry v14 maps fixed dice the other way round. The test now checks the mapping first. The module itself was working.
+
 ## 1.2.0
 - Removed the daylight rule: it ended Light at once in scenes with low darkness, such as lit caves. The Light now stays on until the caster dismisses it, casts again, or the object is collected.
 - Every Light Cantrip card is whispered to the GM and the players who own the caster or the object, with Error and Unexpected buttons. The cast card has Dismiss for the caster.
