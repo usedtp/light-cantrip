@@ -1,0 +1,7 @@
+.light-cantrip-card h3 { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; }
+.light-cantrip-card .lc-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid #0006; vertical-align: middle; }
+.light-cantrip-card .lc-note { font-size: 0.85em; opacity: 0.85; }
+.light-cantrip-card .lc-buttons { display: flex; gap: 4px; }
+.light-cantrip-picker label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 4px 0; }
+.light-cantrip-picker select { flex: 1; }
+.light-cantrip-picker .hint { font-size: 0.85em; opacity: 0.85; }

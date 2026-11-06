@@ -1,0 +1,114 @@
+{
+  "LIGHTCANTRIP": {
+    "title": "Light Cantrip",
+    "noGM": "Light Cantrip needs a GM logged in to change lights and items.",
+    "gmTimeout": "Light Cantrip: the GM's browser did not answer. Try again.",
+    "settings": {
+      "allowHandoff": {
+        "name": "Allow hand-off",
+        "hint": "An ally within reach can hand an object to the caster, who lights it and hands it back (2024 PHB: the object can't be worn or carried by someone else when touched). Off: casters can only pick their own items."
+      },
+      "handoffRange": {
+        "name": "Hand-off reach",
+        "hint": "How close an ally must be to hand an object over, in grid units (default 5 ft = adjacent)."
+      },
+      "darkOnHandChange": {
+        "name": "Goes dark when it changes hands",
+        "hint": "A lit object moved to another character's inventory (drag, trade) stops shining. Firing, throwing and the module's own hand-off never trigger this. House rule; the PHB has no such limit."
+      },
+      "openContainers": {
+        "name": "Open containers",
+        "hint": "Comma list of words. A lit object inside a container whose name contains one of these still shines (for example Quiver). Any other container (backpack, pouch, Bag of Holding) covers it."
+      },
+      "daylightRule": {
+        "name": "Ends in daylight",
+        "hint": "House rule: Light ends when its light is on a scene whose darkness is below the threshold. The PHB does not end Light in sunlight."
+      },
+      "daylightThreshold": {
+        "name": "Daylight threshold",
+        "hint": "Scene darkness below this counts as daylight. 0 is full day, 1 is full dark."
+      },
+      "brightRadius": {
+        "name": "Bright radius",
+        "hint": "Bright light radius in grid units. 2024 PHB: 20 ft."
+      },
+      "dimRadius": {
+        "name": "Dim radius (total)",
+        "hint": "Outer edge of dim light from the center, in grid units. 2024 PHB: 20 ft bright plus 20 ft dim = 40."
+      },
+      "createMacro": {
+        "name": "Create the Light Cantrip macro",
+        "hint": "Adds a 'Light Cantrip' macro every player can drag to their hotbar."
+      },
+      "defaultColor": {
+        "name": "Default light color",
+        "hint": "Color the picker starts with. Remembered from your last cast."
+      }
+    },
+    "picker": {
+      "title": "Light: {name}",
+      "object": "Object to light",
+      "color": "Color",
+      "yours": "{name} carries",
+      "handoffFrom": "Hand-off from {name}",
+      "projectile": "flies when fired",
+      "rule": "Touch one Large or smaller object that isn't worn or carried by someone else. Bright light 20 ft, dim 20 ft more, 1 hour. Covering it blocks the light. Casting again ends it.",
+      "handoffHint": "Picking an ally's item: they hand it to you, you light it, and it goes back to them.",
+      "ok": "Light it",
+      "noCaster": "Select your token first.",
+      "nothing": "No object to light."
+    },
+    "menu": {
+      "title": "Light: {name}",
+      "selectToken": "Select your token first.",
+      "noSpell": "{name} doesn't have the Light cantrip.",
+      "status": "{item} is lit, {where}.",
+      "isCovered": "It is covered.",
+      "whereCarried": "carried by {owner}",
+      "whereAttached": "stuck in its target",
+      "whereGround": "on the ground",
+      "cover": "Cover",
+      "uncover": "Uncover",
+      "dismiss": "Dismiss",
+      "collect": "Collect",
+      "recast": "Cast again"
+    },
+    "card": {
+      "castTitle": "Light",
+      "cast": "{caster} casts Light on {item} ({owner}).",
+      "handoff": "{owner} handed it to {caster}, who lit it and handed it back.",
+      "rule": "Bright light 20 ft, dim 20 ft more. 1 hour (not timed here: dismiss it when the hour is up).",
+      "coverToggle": "Cover / Uncover",
+      "dismiss": "Dismiss",
+      "collect": "Collect",
+      "collectPrompt": "{owner}: collect the lit {item}? Collecting ends the light.",
+      "ended": "{caster}'s Light on {item} ends: {reason}.",
+      "over": "This Light has ended.",
+      "reason": {
+        "recast": "cast again",
+        "relit": "another Light was cast on it",
+        "dismiss": "dismissed",
+        "collected": "collected",
+        "daylight": "daylight",
+        "changedHands": "it changed hands",
+        "itemGone": "the object is gone",
+        "gm": "ended by the GM"
+      }
+    },
+    "attack": {
+      "noTarget": "No target: the lit projectile's light dropped at your feet. Target a token before firing.",
+      "missFlavor": "Lit {item}: miss",
+      "miss": "The lit {item} lands {squares} squares ({feet} {units}) {dir} of {target}."
+    },
+    "err": {
+      "noActor": "Caster or owner not found.",
+      "notYours": "You don't control this.",
+      "notObject": "That is not an object that can be lit.",
+      "noQuantity": "None left to light.",
+      "noSpell": "That Light has already ended.",
+      "handoffOff": "The GM has turned off hand-offs: pick one of your own items.",
+      "handoffTokens": "Both tokens must be on the same scene for a hand-off.",
+      "handoffRange": "The ally must be within {range} {units} to hand it over."
+    }
+  }
+}
