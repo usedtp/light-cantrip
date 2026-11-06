@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {
-  DIRECTIONS, landingPoint, parseKeywords, isOpenContainerName, blockedByContainer, isDaylight,
+  DIRECTIONS, landingPoint, parseKeywords, isOpenContainerName, blockedByContainer,
   isLightSpell, isProjectile, litName, attackHits, tokenCenter, reachDistance
 } from "../scripts/geometry.mjs";
 
@@ -33,12 +33,6 @@ t("container chain blocks light", () => {
   assert.equal(blockedByContainer("q", look, k), false);
   assert.equal(blockedByContainer("b", look, k), true);
   assert.equal(blockedByContainer("q2", look, k), true, "quiver inside a backpack is covered");
-});
-t("daylight", () => {
-  assert.equal(isDaylight(0, 0.25), true);
-  assert.equal(isDaylight(0.25, 0.25), false);
-  assert.equal(isDaylight(1, 0.25), false);
-  assert.equal(isDaylight(undefined, 0.25), false);
 });
 t("light spell detection", () => {
   assert.equal(isLightSpell({ type: "spell", system: { identifier: "light" } }), true);

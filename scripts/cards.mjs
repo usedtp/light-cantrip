@@ -8,7 +8,7 @@ function btn(action, key, label, icon) {
   return `<button type="button" data-lc-action="${action}" data-lc-key="${esc(key)}"><i class="fa-solid ${icon}"></i> ${esc(label)}</button>`;
 }
 
-/** Error and Unclear buttons on every card. Anyone who sees the card can report. */
+/** Error and Unexpected buttons on every card. Anyone who sees the card can report. */
 function reportButtons(key) {
   return `<div class="lc-report"><span>${esc(L("reportPrompt"))}</span>`
     + `<button type="button" data-lc-action="report-error" data-lc-key="${esc(key)}">${esc(L("reportError"))}</button>`
@@ -19,16 +19,24 @@ function swatch(color) {
   return `<span class="lc-swatch" style="background:${esc(color)}"></span>`;
 }
 
-async function create(content, whisper, flagKind, key) {
+/** The GMs plus the players who own the caster or the object. Every card is whispered to them only. */
+export function involvedUsers(rec) {
+  const actorFrom = uuid => { try { return fromUuidSync(uuid); } catch (err) { return null; } };
+  const actors = [actorFrom(rec.casterUuid), actorFrom(rec.ownerUuid)].filter(Boolean);
+  return game.users.filter(u => u.isGM || actors.some(a => a.testUserPermission(u, "OWNER"))).map(u => u.id);
+}
+
+async function create(content, rec, flagKind, extra = {}) {
   return ChatMessage.create({
-    content: `<div class="light-cantrip-card">${content}${reportButtons(key)}</div>`,
+    content: `<div class="light-cantrip-card">${content}${reportButtons(rec.key)}</div>`,
     speaker: { alias: game.i18n.localize("LIGHTCANTRIP.title") },
-    whisper: whisper ?? [],
-    flags: { [MODULE_ID]: { kind: flagKind, key } }
+    whisper: involvedUsers(rec),
+    flags: { [MODULE_ID]: { kind: flagKind, key: rec.key } },
+    ...extra
   });
 }
 
-/** Public card when Light is cast, with Cover and Dismiss buttons for the people who control it. */
+/** Card when Light is cast: Cover and Dismiss for the caster, Error and Unexpected for everyone who sees it. */
 export async function postCastCard(rec) {
   const handoff = rec.handoff ? `<p class="lc-note">${esc(L("handoff", { owner: rec.ownerName, caster: rec.casterName }))}</p>` : "";
   const content = `
@@ -37,24 +45,31 @@ export async function postCastCard(rec) {
     ${handoff}
     <p class="lc-note">${esc(L("rule"))}</p>
     <div class="lc-buttons">${btn("cover", rec.key, L("coverToggle"), "fa-mitten")}${btn("dismiss", rec.key, L("dismiss"), "fa-xmark")}</div>`;
-  return create(content, null, "cast", rec.key);
+  return create(content, rec, "cast");
 }
 
-const REASONS = ["recast", "relit", "dismiss", "collected", "daylight", "changedHands", "itemGone", "gm"];
+const REASONS = ["recast", "relit", "dismiss", "collected", "changedHands", "itemGone", "gm"];
 
-export async function postEndNote(rec, reason, userIds) {
+export async function postEndNote(rec, reason) {
   const why = REASONS.includes(reason) ? L(`reason.${reason}`) : reason;
   const content = `<p>${swatch(rec.color)} ${esc(L("ended", { caster: rec.casterName, item: rec.originalName, reason: why }))}</p>`;
-  // Daylight, changed hands and dismissal are seen by everyone at the table; the rest only by those involved.
-  const publicReasons = ["daylight", "changedHands", "dismiss"];
-  return create(content, publicReasons.includes(reason) ? null : userIds, "end", rec.key);
+  return create(content, rec, "end");
 }
 
-export async function postCollectCard(rec, userIds) {
+export async function postCollectCard(rec) {
   const content = `
     <p>${swatch(rec.color)} ${esc(L("collectPrompt", { owner: rec.ownerName, item: rec.originalName }))}</p>
     <div class="lc-buttons">${btn("collect", rec.key, L("collect"), "fa-hand")}</div>`;
-  return create(content, userIds, "collect", rec.key);
+  return create(content, rec, "collect");
+}
+
+/** A lit shot's result (hit, miss with its d8 and d4, or no target), from the shooter's browser. */
+export async function postShotCard(rec, text, { rolls, speaker } = {}) {
+  const content = `<p>${swatch(rec.color)} ${esc(text)}</p>`;
+  const extra = {};
+  if (rolls?.length) extra.rolls = rolls;
+  if (speaker) extra.speaker = speaker;
+  return create(content, rec, "shot", extra);
 }
 
 /** Button handling. Buttons show only for players who control the caster or the object's owner. */

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+- Removed the daylight rule: it ended Light at once in scenes with low darkness, such as lit caves. The Light now stays on until the caster dismisses it, casts again, or the object is collected.
+- Every Light Cantrip card is whispered to the GM and the players who own the caster or the object, with Error and Unexpected buttons. The cast card has Dismiss for the caster.
+- Hit, miss and no-target results each get a card with report buttons.
+- Self-test runs on a fully lit scene and checks the cast card.
+
 ## 1.1.0
 - Error and Unclear buttons on every chat card, and "Report a problem" in the macro menu. Reports carry the Light's state, targets and the last 60 steps from this browser.
 - Every step of a lit shot is logged: lit ammunition loaded or why not, fired or not, target, hit or miss.

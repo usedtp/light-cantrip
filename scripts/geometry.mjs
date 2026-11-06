@@ -62,12 +62,6 @@ export function blockedByContainer(containerId, lookup, keywords) {
   return false;
 }
 
-/** Daylight house rule: scene darkness below the threshold counts as sunlight. */
-export function isDaylight(darkness, threshold) {
-  if (typeof darkness !== "number" || Number.isNaN(darkness)) return false;
-  return darkness < threshold;
-}
-
 /** Is this item the Light cantrip? */
 export function isLightSpell(item) {
   if (!item || item.type !== "spell") return false;

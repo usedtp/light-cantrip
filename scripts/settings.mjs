@@ -12,11 +12,6 @@ export function registerSettings() {
   reg("handoffRange", { scope: "world", type: Number, default: 5 });
   reg("darkOnHandChange", { scope: "world", type: Boolean, default: true });
   reg("openContainers", { scope: "world", type: String, default: "Quiver" });
-  reg("daylightRule", { scope: "world", type: Boolean, default: true });
-  reg("daylightThreshold", {
-    scope: "world", type: Number, default: 0.25,
-    range: { min: 0, max: 1, step: 0.05 }
-  });
   reg("brightRadius", { scope: "world", type: Number, default: 20 });
   reg("dimRadius", { scope: "world", type: Number, default: 40 });
   reg("createMacro", { scope: "world", type: Boolean, default: true });

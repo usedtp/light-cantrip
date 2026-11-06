@@ -2,7 +2,7 @@
   "id": "light-cantrip",
   "title": "Light Cantrip",
   "description": "Runs the 2024 Light cantrip: pick an object you carry (or an ally hands you one), it sheds light and moves with its carrier. Lit ammunition and thrown weapons carry the light to where they land.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "authors": [
     {
       "name": "Mick Kitor"
@@ -50,7 +50,7 @@
   },
   "url": "https://github.com/usedtp/light-cantrip",
   "manifest": "https://github.com/usedtp/light-cantrip/releases/latest/download/module.json",
-  "download": "https://github.com/usedtp/light-cantrip/releases/download/1.1.0/module.zip",
+  "download": "https://github.com/usedtp/light-cantrip/releases/download/1.2.0/module.zip",
   "bugs": "https://github.com/usedtp/light-cantrip/issues",
   "changelog": "https://github.com/usedtp/light-cantrip/blob/main/CHANGELOG.md",
   "readme": "https://github.com/usedtp/light-cantrip#readme"

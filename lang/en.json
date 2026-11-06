@@ -20,14 +20,6 @@
         "name": "Open containers",
         "hint": "Comma list of words. A lit object inside a container whose name contains one of these still shines (for example Quiver). Any other container (backpack, pouch, Bag of Holding) covers it."
       },
-      "daylightRule": {
-        "name": "Ends in daylight",
-        "hint": "House rule: Light ends when its light is on a scene whose darkness is below the threshold. The PHB does not end Light in sunlight."
-      },
-      "daylightThreshold": {
-        "name": "Daylight threshold",
-        "hint": "Scene darkness below this counts as daylight. 0 is full day, 1 is full dark."
-      },
       "brightRadius": {
         "name": "Bright radius",
         "hint": "Bright light radius in grid units. 2024 PHB: 20 ft."
@@ -78,9 +70,9 @@
       "castTitle": "Light",
       "cast": "{caster} casts Light on {item} ({owner}).",
       "handoff": "{owner} handed it to {caster}, who lit it and handed it back.",
-      "rule": "Bright light 20 ft, dim 20 ft more. 1 hour (not timed here: dismiss it when the hour is up).",
+      "rule": "Bright light 20 ft, dim 20 ft more. Stays on until the caster clicks Dismiss, casts Light again, or the object is collected.",
       "coverToggle": "Cover / Uncover",
-      "dismiss": "Dismiss",
+      "dismiss": "Dismiss (end the light)",
       "collect": "Collect",
       "collectPrompt": "{owner}: collect the lit {item}? Collecting ends the light.",
       "ended": "{caster}'s Light on {item} ends: {reason}.",
@@ -90,20 +82,19 @@
         "relit": "another Light was cast on it",
         "dismiss": "dismissed",
         "collected": "collected",
-        "daylight": "daylight",
         "changedHands": "it changed hands",
         "itemGone": "the object is gone",
         "gm": "ended by the GM"
       },
       "reportPrompt": "Problem?",
       "reportError": "Error",
-      "reportUnclear": "Unclear"
+      "reportUnclear": "Unexpected"
     },
     "attack": {
       "noTarget": "No target: the lit projectile's light dropped at your feet. Target a token before firing.",
-      "missFlavor": "Lit {item}: miss",
       "miss": "The lit {item} lands {squares} squares ({feet} {units}) {dir} of {target}.",
-      "noTargetCard": "No target was selected, so the lit {item} dropped at the shooter's feet. Target a token (T) before firing."
+      "noTargetCard": "No target was selected, so the lit {item} dropped at the shooter's feet. Target a token (T) before firing.",
+      "hit": "The lit {item} hits {target}. The light goes with {target}."
     },
     "err": {
       "noActor": "Caster or owner not found.",

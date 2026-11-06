@@ -12,13 +12,13 @@ Manifest URL: `https://github.com/usedtp/light-cantrip/releases/latest/download/
 - **Or use the "Light Cantrip" macro** (created in the Macro Directory; drag it to the hotbar).
   - No active Light: casts it.
   - Active Light: Collect, Cover/Uncover, Dismiss, Cast again.
-- **Chat card buttons:** Cover/Uncover and Dismiss. Only the caster, the object's owner and the GM see them.
+- **Cast card** (whispered to the caster's player and the GM): Cover/Uncover, Dismiss, Error, Unexpected. Dismiss shows for the caster's player and the GM only.
 - A GM must be logged in. The GM's browser makes the item and light changes.
 
 ## Rules (2024 PHB p.379)
 - One Large or smaller object that isn't worn or carried by someone else. Bright 20 ft, dim 20 ft more.
 - Covering it blocks the light. Casting again ends the old Light. The caster can dismiss it at any time (PHB ch.7, Duration).
-- The 1 hour duration is not timed: dismiss it when the hour is up.
+- The Light stays on until the caster clicks **Dismiss**, casts Light again, or the object is collected. Scene lighting never ends it.
 
 ## How it behaves
 - **Hand-off:** pick an ally's item when they are within reach (5 ft). They hand it over, it is lit, it goes back. GM setting.
@@ -33,10 +33,9 @@ Manifest URL: `https://github.com/usedtp/light-cantrip/releases/latest/download/
 
 ## House rules (GM settings)
 - **Goes dark when it changes hands** (default on). Dragging or trading the lit object to another character ends the Light. Firing and hand-off don't count.
-- **Ends in daylight** (default on, threshold 0.25). The Light ends when its scene's darkness is below the threshold.
 
 ## Reporting a problem
-- **Error / Unclear buttons** at the bottom of every Light Cantrip chat card (cast, ended, collect, miss).
+- **Error / Unexpected buttons** at the bottom of every Light Cantrip chat card: cast, hit, miss, no target, ended, collect. Every card is whispered to the GM and the players who own the caster or the object.
 - **Macro menu:** "Report a problem" while a Light is active.
 - **Anywhere:** Game Settings > Configure Settings > usedtp Logger > Error / Unclear.
 - A report carries the Light's state, your targets and selected tokens, and this browser's last 60 Light Cantrip steps, so it shows what happened just before the problem.

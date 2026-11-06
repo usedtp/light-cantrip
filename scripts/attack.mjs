@@ -1,6 +1,7 @@
 import { cfg } from "./settings.mjs";
 import { log } from "./diag.mjs";
 import { request } from "./net.mjs";
+import { postShotCard } from "./cards.mjs";
 import { landingPoint, attackHits, tokenCenter } from "./geometry.mjs";
 
 /*
@@ -81,10 +82,8 @@ async function onPostRollAttack(rolls, { subject } = {}) {
       return;
     }
     ui.notifications.warn(game.i18n.localize("LIGHTCANTRIP.attack.noTarget"));
-    await ChatMessage.create({
-      speaker: ChatMessage.getSpeaker({ actor: subject.actor }),
-      content: `<p>${game.i18n.format("LIGHTCANTRIP.attack.noTargetCard", { item: rec.originalName })}</p>`
-    });
+    await postShotCard(rec, game.i18n.format("LIGHTCANTRIP.attack.noTargetCard", { item: rec.originalName }),
+      { speaker: ChatMessage.getSpeaker({ actor: subject.actor }) });
     log().unclear(`no-target-${rec.key}`, "lit projectile fired with no target; light dropped at the shooter", { item: rec.originalName });
     return request("fired", { key: rec.key, state: "ground", sceneId: scene.id, x: at.x, y: at.y, elevation: shooter.elevation ?? 0 });
   }
@@ -95,6 +94,8 @@ async function onPostRollAttack(rolls, { subject } = {}) {
 
   if (hit) {
     log().info("lit projectile hit", { item: rec.originalName, target: targetToken.name, total: roll.total, ac });
+    await postShotCard(rec, game.i18n.format("LIGHTCANTRIP.attack.hit", { item: rec.originalName, target: targetToken.name }),
+      { speaker: ChatMessage.getSpeaker({ actor: subject.actor }) });
     return request("fired", { key: rec.key, state: "attached", sceneId: scene.id, tokenId: targetToken.id });
   }
 
@@ -104,15 +105,10 @@ async function onPostRollAttack(rolls, { subject } = {}) {
   const center = tokenCenter(targetToken, size);
   const rect = scene.dimensions?.sceneRect;
   const land = landingPoint(center, dirRoll.total, distRoll.total, size, rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : undefined);
-  await ChatMessage.create({
-    speaker: ChatMessage.getSpeaker({ actor: subject.actor }),
-    flavor: game.i18n.format("LIGHTCANTRIP.attack.missFlavor", { item: rec.originalName }),
-    content: `<p>${game.i18n.format("LIGHTCANTRIP.attack.miss", {
-      item: rec.originalName, squares: distRoll.total, feet: distRoll.total * scene.grid.distance,
-      units: scene.grid.units ?? "ft", dir: land.dir, target: targetToken.name
-    })}</p>`,
-    rolls: [dirRoll, distRoll]
-  });
+  await postShotCard(rec, game.i18n.format("LIGHTCANTRIP.attack.miss", {
+    item: rec.originalName, squares: distRoll.total, feet: distRoll.total * scene.grid.distance,
+    units: scene.grid.units ?? "ft", dir: land.dir, target: targetToken.name
+  }), { rolls: [dirRoll, distRoll], speaker: ChatMessage.getSpeaker({ actor: subject.actor }) });
   log().info("lit projectile missed", { item: rec.originalName, target: targetToken.name, d8: dirRoll.total, d4: distRoll.total });
   return request("fired", { key: rec.key, state: "ground", sceneId: scene.id, x: land.x, y: land.y, elevation: targetToken.elevation ?? 0 });
 }

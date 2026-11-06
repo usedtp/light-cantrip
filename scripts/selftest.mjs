@@ -13,7 +13,8 @@ const near = (a, b, tol = 2) => Math.abs(a.x - b.x) <= tol && Math.abs(a.y - b.y
 export async function suite(t) {
   if (!game.packs.get("dnd5e.equipment24")) return t.skip("dnd5e.equipment24 compendium not found");
   const api = game.modules.get(MODULE_ID).api;
-  const scene = await t.scene({ environment: { darknessLevel: 1 } });
+  // Darkness 0 on purpose: the Light must stay on whatever the scene lighting is.
+  const scene = await t.scene({ environment: { darknessLevel: 0 } });
   const size = scene.grid.size;
 
   const archer = await t.actor({ name: "Test Archer", type: "character", prototypeToken: { actorLink: true, disposition: 1 } });
@@ -44,6 +45,14 @@ export async function suite(t) {
     t.equal(archer.items.get(rec.itemId)?.system.quantity, 1, "lit piece quantity");
     const light = await t.waitFor(() => lightsFor(scene, key)[0], { message: "light on scene" });
     t.ok(near(light, tokenCenter(archerTok, size)), "light at the archer");
+    await new Promise(r => setTimeout(r, 1500));
+    t.ok(records()[key] && lightsFor(scene, key).length === 1, "light still on 1.5 s later on a bright scene");
+  });
+
+  await t.step("cast card is whispered to the GM with Dismiss, Error and Unexpected", async () => {
+    const msg = await t.waitFor(() => game.messages.find(m => m.getFlag(MODULE_ID, "kind") === "cast" && m.getFlag(MODULE_ID, "key") === key), { message: "cast card" });
+    t.ok(msg.whisper.includes(game.user.id), "whispered to the GM");
+    for (const a of ["dismiss", "report-error", "report-unclear"]) t.ok(msg.content.includes(`data-lc-action="${a}"`), `card has ${a}`);
   });
 
   await t.step("a closed backpack covers the light, a quiver does not", async () => {

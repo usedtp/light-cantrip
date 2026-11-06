@@ -2,7 +2,7 @@ import { MODULE_ID, FLAG, cfg } from "./settings.mjs";
 import { log } from "./diag.mjs";
 import { isActiveGM, registerHandler, notifyUser } from "./net.mjs";
 import {
-  PHYSICAL_TYPES, litName, parseKeywords, blockedByContainer, isDaylight, tokenCenter, reachDistance
+  PHYSICAL_TYPES, litName, parseKeywords, blockedByContainer, tokenCenter, reachDistance
 } from "./geometry.mjs";
 import { postCastCard, postEndNote, postCollectCard } from "./cards.mjs";
 
@@ -144,7 +144,7 @@ async function cast({ casterUuid, ownerUuid, itemId, color }, user) {
 /**
  * Ends a Light. Puts the object back: a split-off piece merges into its stack, a whole item gets its name back.
  * Fired ammunition comes back to the stack (collected).
- * @param {string} reason  recast | relit | dismiss | collected | daylight | changedHands | itemGone | gm
+ * @param {string} reason  recast | relit | dismiss | collected | changedHands | itemGone | gm
  * @param {{restore?: boolean}} [opts]  restore false: the object is gone or moved, leave inventories alone.
  */
 export async function endRecord(key, reason, { restore = true } = {}) {
@@ -332,19 +332,12 @@ function lightData(rec, at) {
   };
 }
 
-function sceneDarkness(scene) {
-  return scene.environment?.darknessLevel ?? scene.darkness ?? 1;
-}
-
 async function reconcile(scene) {
   const records = getRecords();
   const want = new Map();
-  const daylight = [];
-  const sunny = cfg.daylightRule && isDaylight(sceneDarkness(scene), cfg.daylightThreshold ?? 0.25);
   for (const rec of Object.values(records)) {
     const at = placement(scene, rec);
     if (!at) continue;
-    if (sunny) { daylight.push(rec.key); continue; }
     want.set(rec.key, at);
   }
 
@@ -370,8 +363,6 @@ async function reconcile(scene) {
   if (updates.length) await scene.updateEmbeddedDocuments("AmbientLight", updates, OPT);
   if (creates.length) await scene.createEmbeddedDocuments("AmbientLight", creates, OPT);
   if (creates.length || deletes.length) log().debug("lights", { scene: scene.name, created: creates.length, updated: updates.length, deleted: deletes.length });
-
-  for (const key of daylight) await endRecord(key, "daylight");
 }
 
 /* ---------------- Watching the world ---------------- */
@@ -456,8 +447,7 @@ function onUpdateItem(item, change) {
 }
 
 function onUpdateScene(scene, change) {
-  const flat = foundry.utils.flattenObject(change);
-  if (Object.keys(flat).some(k => k.startsWith("environment") || k === "darkness")) scheduleReconcile(scene.id);
+  if ("grid" in change || "tokens" in change) scheduleReconcile(scene.id);
 }
 
 async function onDeleteCombat(combat) {
