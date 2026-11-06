@@ -30,8 +30,16 @@ export async function suite(t) {
   const activity = crossbow.system.activities.find(a => a.type === "attack");
   const startQty = bolts.system.quantity;
 
-  const fire = async u => {
-    t.fixDice(u);
+  // Which fixed random value gives which face depends on how Foundry maps randomUniform to dice (v14 maps 0.999 to a 1).
+  // Probe once, then pick the value for the face we want. The same value drives every die in the roll.
+  const probe = CONFIG.Dice.randomUniform;
+  CONFIG.Dice.randomUniform = () => 0.999;
+  const inverse = (await new Roll("1d20").evaluate()).total === 1;
+  CONFIG.Dice.randomUniform = probe;
+  const uFor = (face, faces = 20) => { const u = (face - 0.5) / faces; return inverse ? 1 - u : u; };
+
+  const fire = async face => {
+    t.fixDice(uFor(face));
     t.target(goblinTok);
     await activity.rollAttack({}, { configure: false }, {});
   };
@@ -70,7 +78,7 @@ export async function suite(t) {
   });
 
   await t.step("a hit with the lit bolt moves the light to the target", async () => {
-    await fire(0.999); // natural 20
+    await fire(20); // natural 20
     const rec = await t.waitFor(() => records()[key]?.state === "attached" && records()[key], { timeout: 10000, message: "record attached" });
     t.equal(rec.tokenId, goblinTok.id, "attached to the goblin");
     await t.waitFor(() => { const l = lightsFor(scene, key)[0]; return l && near(l, tokenCenter(goblinTok, size)); }, { message: "light at the goblin" });
@@ -92,7 +100,7 @@ export async function suite(t) {
   await t.step("a miss lands 1d4 squares away in the 1d8 direction", async () => {
     await api.castOn({ caster: archer, itemId: bolts.id });
     await t.waitFor(() => records()[key]?.state === "carried", { message: "second Light" });
-    await fire(0.001); // natural 1; the d8 and d4 also roll 1: North, 1 square
+    await fire(1); // natural 1; the same value makes the d8 and d4 roll 1: North, 1 square
     const rec = await t.waitFor(() => records()[key]?.state === "ground" && records()[key], { timeout: 10000, message: "record on ground" });
     const c = tokenCenter(goblinTok, size);
     t.ok(near(rec, { x: c.x, y: c.y - size }), `landed 1 square north of the goblin (got ${rec.x},${rec.y})`);
