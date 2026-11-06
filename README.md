@@ -2,7 +2,7 @@
 
 Foundry VTT v14 (build 370) and dnd5e 6.0.6. Runs the 2024 PHB Light cantrip.
 
-Requires **usedtp Logger** (installed automatically as a dependency).
+Requires **usedtp Logger** 1.1.2 or newer (installed automatically as a dependency).
 
 ## Install
 Manifest URL: `https://github.com/usedtp/light-cantrip/releases/latest/download/module.json`
@@ -35,9 +35,16 @@ Manifest URL: `https://github.com/usedtp/light-cantrip/releases/latest/download/
 - **Goes dark when it changes hands** (default on). Dragging or trading the lit object to another character ends the Light. Firing and hand-off don't count.
 - **Ends in daylight** (default on, threshold 0.25). The Light ends when its scene's darkness is below the threshold.
 
-## Logs and reports
+## Reporting a problem
+- **Error / Unclear buttons** at the bottom of every Light Cantrip chat card (cast, ended, collect, miss).
+- **Macro menu:** "Report a problem" while a Light is active.
+- **Anywhere:** Game Settings > Configure Settings > usedtp Logger > Error / Unclear.
+- A report carries the Light's state, your targets and selected tokens, and this browser's last 60 Light Cantrip steps, so it shows what happened just before the problem.
+- GM: read reports in Game Settings > Configure Settings > usedtp Logger > Open logs. Export JSON to send them on.
+
+## Logs and self-test
 - Errors, warnings and actions go to `Data/usedtp-logs/light-cantrip/` through usedtp Logger.
-- **Report a problem:** Settings > usedtp Logger > Error / Unclear, or the macro `game.modules.get("light-cantrip").api.report()`.
+- On the first load of each new version, usedtp Logger runs a self-test in a hidden scene: a test archer lights a bolt, it is covered in a backpack and shown in a quiver, follows the archer, is fired for a hit (light follows the target), collected, fired for a miss (lands 1 square north on fixed dice), and dismissed. The GM gets a whispered result.
 
 ## API
 `game.modules.get("light-cantrip").api`: `menu(actor)`, `cast(actor)`, `pick(actor)`, `records()`, `cover(key)`, `dismiss(key)`, `collect(key)`, `end(key)` (GM), `report(category)`.

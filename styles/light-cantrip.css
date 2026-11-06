@@ -5,3 +5,5 @@
 .light-cantrip-picker label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 4px 0; }
 .light-cantrip-picker select { flex: 1; }
 .light-cantrip-picker .hint { font-size: 0.85em; opacity: 0.85; }
+.light-cantrip-card .lc-report { display: flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 0.85em; opacity: 0.85; }
+.light-cantrip-card .lc-report button { flex: 0 0 auto; width: auto; line-height: 1.4; padding: 0 6px; }

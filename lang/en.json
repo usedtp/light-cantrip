@@ -71,7 +71,8 @@
       "uncover": "Uncover",
       "dismiss": "Dismiss",
       "collect": "Collect",
-      "recast": "Cast again"
+      "recast": "Cast again",
+      "report": "Report a problem"
     },
     "card": {
       "castTitle": "Light",
@@ -93,12 +94,16 @@
         "changedHands": "it changed hands",
         "itemGone": "the object is gone",
         "gm": "ended by the GM"
-      }
+      },
+      "reportPrompt": "Problem?",
+      "reportError": "Error",
+      "reportUnclear": "Unclear"
     },
     "attack": {
       "noTarget": "No target: the lit projectile's light dropped at your feet. Target a token before firing.",
       "missFlavor": "Lit {item}: miss",
-      "miss": "The lit {item} lands {squares} squares ({feet} {units}) {dir} of {target}."
+      "miss": "The lit {item} lands {squares} squares ({feet} {units}) {dir} of {target}.",
+      "noTargetCard": "No target was selected, so the lit {item} dropped at the shooter's feet. Target a token (T) before firing."
     },
     "err": {
       "noActor": "Caster or owner not found.",

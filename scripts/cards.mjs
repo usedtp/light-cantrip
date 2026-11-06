@@ -1,5 +1,5 @@
 import { MODULE_ID } from "./settings.mjs";
-import { log } from "./log.mjs";
+import { log } from "./diag.mjs";
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
 const L = (key, data) => (data ? game.i18n.format(`LIGHTCANTRIP.card.${key}`, data) : game.i18n.localize(`LIGHTCANTRIP.card.${key}`));
@@ -8,13 +8,20 @@ function btn(action, key, label, icon) {
   return `<button type="button" data-lc-action="${action}" data-lc-key="${esc(key)}"><i class="fa-solid ${icon}"></i> ${esc(label)}</button>`;
 }
 
+/** Error and Unclear buttons on every card. Anyone who sees the card can report. */
+function reportButtons(key) {
+  return `<div class="lc-report"><span>${esc(L("reportPrompt"))}</span>`
+    + `<button type="button" data-lc-action="report-error" data-lc-key="${esc(key)}">${esc(L("reportError"))}</button>`
+    + `<button type="button" data-lc-action="report-unclear" data-lc-key="${esc(key)}">${esc(L("reportUnclear"))}</button></div>`;
+}
+
 function swatch(color) {
   return `<span class="lc-swatch" style="background:${esc(color)}"></span>`;
 }
 
 async function create(content, whisper, flagKind, key) {
   return ChatMessage.create({
-    content: `<div class="light-cantrip-card">${content}</div>`,
+    content: `<div class="light-cantrip-card">${content}${reportButtons(key)}</div>`,
     speaker: { alias: game.i18n.localize("LIGHTCANTRIP.title") },
     whisper: whisper ?? [],
     flags: { [MODULE_ID]: { kind: flagKind, key } }
@@ -57,6 +64,15 @@ export function registerCards(api) {
     const root = html instanceof HTMLElement ? html : html?.[0];
     if (!root) return;
     for (const b of root.querySelectorAll("button[data-lc-action]")) {
+      if (b.dataset.lcAction.startsWith("report-")) {
+        const category = b.dataset.lcAction.slice(7);
+        b.addEventListener("click", ev => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          api.report(category, { key: b.dataset.lcKey, messageId: message.id });
+        });
+        continue;
+      }
       const rec = api.record(b.dataset.lcKey);
       if (!rec) { b.disabled = true; b.title = game.i18n.localize("LIGHTCANTRIP.card.over"); continue; }
       if (!api.canControl(rec, b.dataset.lcAction)) { b.style.display = "none"; continue; }

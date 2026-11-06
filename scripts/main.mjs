@@ -1,11 +1,12 @@
 import { MODULE_ID, registerSettings, cfg } from "./settings.mjs";
-import { log } from "./log.mjs";
+import { log, recentTrace } from "./diag.mjs";
 import { registerSocket, request } from "./net.mjs";
 import { registerGM } from "./gm.mjs";
 import { registerCards } from "./cards.mjs";
 import { registerAttack } from "./attack.mjs";
 import { openPicker } from "./picker.mjs";
 import { isLightSpell } from "./geometry.mjs";
+import { suite } from "./selftest.mjs";
 
 const L = (key, data) => (data ? game.i18n.format(`LIGHTCANTRIP.menu.${key}`, data) : game.i18n.localize(`LIGHTCANTRIP.menu.${key}`));
 
@@ -51,6 +52,7 @@ async function menu(actor = defaultActor()) {
     { action: "dismiss", label: L("dismiss"), icon: "fa-solid fa-xmark" },
     { action: "recast", label: L("recast"), icon: "fa-solid fa-lightbulb" }
   ];
+  buttons.push({ action: "report", label: L("report"), icon: "fa-solid fa-flag" });
   if (rec.state !== "carried") buttons.unshift({ action: "collect", label: L("collect"), icon: "fa-solid fa-hand", default: true });
   const choice = await DialogV2.wait({
     window: { title: L("title", { name: actor.name }), icon: "fa-solid fa-lightbulb" },
@@ -62,6 +64,7 @@ async function menu(actor = defaultActor()) {
   if (choice === "dismiss") return api.dismiss(rec.key);
   if (choice === "collect") return api.collect(rec.key);
   if (choice === "recast") return cast(actor);
+  if (choice === "report") return api.report("error", { key: rec.key });
   return null;
 }
 
@@ -77,7 +80,22 @@ const api = {
   collect: key => request("collect", { key }),
   /** GM: end any Light. */
   end: key => request("end", { key }),
-  report: (category = "error") => log().openReport(category)
+  /** GM or tests: light an item without the spell or the picker. */
+  castOn: ({ caster, owner, itemId, color }) => request("cast", { casterUuid: caster.uuid, ownerUuid: (owner ?? caster).uuid, itemId, color }),
+  /** Open the Error/Unclear dialog with the Light's state and this browser's recent trace attached. */
+  report: (category = "error", { key = null, messageId = null } = {}) => {
+    const strip = r => (r ? { ...r, snapshot: undefined } : null);
+    const all = foundry.utils.deepClone(cfg.records ?? {});
+    const context = {
+      messageId,
+      record: strip(key ? all[key] : null),
+      records: key ? undefined : Object.values(all).map(strip),
+      targets: [...(game.user.targets ?? [])].map(t => ({ name: t.name, id: t.id })),
+      controlled: (canvas?.tokens?.controlled ?? []).map(t => ({ name: t.name, id: t.id })),
+      trace: recentTrace()
+    };
+    return log().openReport(category, context);
+  }
 };
 
 Hooks.once("init", () => {
@@ -91,6 +109,11 @@ Hooks.once("init", () => {
 Hooks.once("ready", () => {
   registerSocket();
   log().info("ready", { gm: game.user.isGM });
+  try {
+    (game.modules.get("usedtp-logger")?.api ?? globalThis.UsedtpLogger)?.selfTest?.register(MODULE_ID, suite, { title: "Light Cantrip" });
+  } catch (err) {
+    log().error("self-test register failed", err);
+  }
 });
 
 // Casting the Light spell opens the picker in the caster's browser.

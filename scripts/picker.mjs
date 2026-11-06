@@ -1,5 +1,5 @@
 import { cfg } from "./settings.mjs";
-import { log } from "./log.mjs";
+import { log } from "./diag.mjs";
 import { request } from "./net.mjs";
 import { PHYSICAL_TYPES, isProjectile, reachDistance } from "./geometry.mjs";
 

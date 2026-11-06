@@ -1,5 +1,5 @@
 import { cfg } from "./settings.mjs";
-import { log } from "./log.mjs";
+import { log } from "./diag.mjs";
 import { request } from "./net.mjs";
 import { landingPoint, attackHits, tokenCenter } from "./geometry.mjs";
 
@@ -22,17 +22,23 @@ function onPreRollAttack(config) {
   const activity = config?.subject;
   const weapon = activity?.item;
   const actor = activity?.actor ?? weapon?.actor;
-  if (!weapon?.system?.properties?.has?.("amm")) return;
+  const lit = carriedLit(actor);
+  if (!lit.length) return;
+  if (!weapon?.system?.properties?.has?.("amm")) {
+    log().debug("attack with a Light active, weapon takes no ammunition", { weapon: weapon?.name, mode: config.attackMode });
+    return;
+  }
   const wanted = weapon.system.ammunition?.type;
-  for (const rec of carriedLit(actor)) {
+  for (const rec of lit) {
     const ammo = actor.items.get(rec.itemId);
     if (!ammo || ammo.system?.type?.value !== "ammo" || (ammo.system.quantity ?? 0) < 1) continue;
     if (wanted && ammo.system.type.subtype !== wanted) continue;
     config.ammunition = ammo.id;
     if (config.rolls?.[0]?.options) config.rolls[0].options.ammunition = ammo.id;
-    log().debug("lit ammunition loaded", { weapon: weapon.name, ammo: ammo.name });
+    log().info("lit ammunition loaded", { weapon: weapon.name, ammo: ammo.name, ammoId: ammo.id });
     return;
   }
+  log().info("lit item does not fit this weapon", { weapon: weapon.name, wanted, lit: lit.map(r => r.originalName) });
 }
 
 function firedRecord(roll, activity) {
@@ -52,7 +58,13 @@ async function onPostRollAttack(rolls, { subject } = {}) {
   const roll = rolls?.[0];
   if (!roll || !subject) return;
   const rec = firedRecord(roll, subject);
-  if (!rec) return;
+  if (!rec) {
+    if (carriedLit(subject.actor).length) {
+      log().info("attack did not use the lit item", { item: subject.item?.name, ammunition: roll.options?.ammunition ?? null, mode: roll.options?.attackMode ?? null });
+    }
+    return;
+  }
+  log().info("lit item fired", { item: rec.originalName, weapon: subject.item?.name, total: roll.total, targets: game.user.targets.size });
   const ammo = subject.actor?.items.get(rec.itemId);
   if (ammo?.system?.properties?.has?.("ret")) return; // returning ammunition comes back with its light
 
@@ -69,6 +81,10 @@ async function onPostRollAttack(rolls, { subject } = {}) {
       return;
     }
     ui.notifications.warn(game.i18n.localize("LIGHTCANTRIP.attack.noTarget"));
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: subject.actor }),
+      content: `<p>${game.i18n.format("LIGHTCANTRIP.attack.noTargetCard", { item: rec.originalName })}</p>`
+    });
     log().unclear(`no-target-${rec.key}`, "lit projectile fired with no target; light dropped at the shooter", { item: rec.originalName });
     return request("fired", { key: rec.key, state: "ground", sceneId: scene.id, x: at.x, y: at.y, elevation: shooter.elevation ?? 0 });
   }

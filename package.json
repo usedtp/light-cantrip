@@ -4,6 +4,6 @@
   "type": "module",
   "description": "Foundry VTT module. package.json exists only to run the tests; it is not shipped in the release zip.",
   "scripts": {
-    "test": "node tests/light-cantrip.test.mjs"
+    "test": "node tests/light-cantrip.test.mjs && node tests/diag.test.mjs"
   }
 }

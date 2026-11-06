@@ -1,5 +1,5 @@
 import { MODULE_ID, FLAG, cfg } from "./settings.mjs";
-import { log } from "./log.mjs";
+import { log } from "./diag.mjs";
 import { isActiveGM, registerHandler, notifyUser } from "./net.mjs";
 import {
   PHYSICAL_TYPES, litName, parseKeywords, blockedByContainer, isDaylight, tokenCenter, reachDistance

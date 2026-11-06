@@ -1,5 +1,5 @@
 import { MODULE_ID } from "./settings.mjs";
-import { log } from "./log.mjs";
+import { log } from "./diag.mjs";
 
 /*
  * Players cannot edit other players' actors or create scene lights, so every change runs in the active GM's
